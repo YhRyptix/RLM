@@ -21,9 +21,13 @@ local function teleportPlayer(targetPosition, speed)
     wait(0.7)
 end
 local speed = 0.1
+---Tundra 2
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4007, 842, -963)
 wait(2)
+print("tundra 2")
 local targetPosition = Vector3.new(3982, 439, -1015)
+teleportPlayer(targetPosition, speed)
+local targetPosition = Vector3.new(4004.997559, 439.293915, -1014.699158)
 teleportPlayer(targetPosition, speed)
 local targetPosition = Vector3.new(4032, 439, -1014)
 teleportPlayer(targetPosition, speed)
@@ -31,11 +35,14 @@ local targetPosition = Vector3.new(3935, 440, -1211)
 teleportPlayer(targetPosition, speed)
 local targetPosition = Vector3.new(3820, 441, -1183)
 teleportPlayer(targetPosition, speed)
-local targetPosition = Vector3.new(3886, 627, -1344)
+game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3886, 628, -1344)
+wait(1)
 teleportPlayer(targetPosition, speed)
 local targetPosition = Vector3.new(3890, 625, -1385)
 teleportPlayer(targetPosition, speed)
 --game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-630, 119, 40731)---   NORPA BUGGED UNTIL FIX LATER ON
+-------CRYPT INNER
+print("IDK1")
 wait(2)
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(197, 70, -1937)
 local targetPosition = Vector3.new(163, 56, -1928)
@@ -43,26 +50,36 @@ teleportPlayer(targetPosition, speed)
 local targetPosition = Vector3.new(163, 56, -1955)
 teleportPlayer(targetPosition, speed)
 wait(5)
+print("IDK2")
+----SUNKEN
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1134, 215, -3444)
-local targetPosition = Vector3.new(1101, 192, -3501)
+
+
+local targetPosition = Vector3.new(1109.342163, 192.368149, -3517.325195)
 teleportPlayer(targetPosition, speed)
-local targetPosition = Vector3.new(1108, 192, -3471)
+local targetPosition = Vector3.new(1103.433960, 192.368149, -3498.913330)
 teleportPlayer(targetPosition, speed)
-local targetPosition = Vector3.new(1146, 192, -3484)
+local targetPosition = Vector3.new(1095.666504, 192.368149, -3477.281250)
 teleportPlayer(targetPosition, speed)
-local targetPosition = Vector3.new(1079, 192, -3481)
+local targetPosition = Vector3.new(1113.384033, 192.368149, -3463.202881)
 teleportPlayer(targetPosition, speed)
-local targetPosition = Vector3.new(1109, 192, -3452)
+local targetPosition = Vector3.new(1130.509888, 192.368149, -3489.632812)
 teleportPlayer(targetPosition, speed)
-local targetPosition = Vector3.new(1103, 192, -3525)
+local targetPosition = Vector3.new(1084.352783, 192.368149, -3487.250244)
 teleportPlayer(targetPosition, speed)
+
 wait(2)
+print("IDK3")
+----FIRST LAYER
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1145, -240, -4576)
 wait(2)
+print("IDK4")
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1000, -456, -4330)
 wait(2)
+print("IDK5")
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(686, 111, -4596)
 wait(2)
+print("IDK6")
 local targetPosition = Vector3.new(693, 111, -4625)
 teleportPlayer(targetPosition, speed)
 local targetPosition = Vector3.new(666, 111, -4579)
@@ -129,6 +146,8 @@ teleportPlayer(targetPosition, speed)
 local targetPosition = Vector3.new(-1138, 865, 2680)
 teleportPlayer(targetPosition, speed) 
 wait(2)
+print("IDK100")
+----SIGIL
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(6648, 1507, 733)
 
 local targetPosition = Vector3.new(6613, 1461, 468)
@@ -172,10 +191,12 @@ local targetPosition = Vector3.new(6517.868164, 1405.294067, -247.309448)
 teleportPlayer(targetPosition, speed)
 local targetPosition = Vector3.new(6525.713867, 1378.293457, -255.790070)
 teleportPlayer(targetPosition, speed)
-
+--------------------------------
 
 
 wait(2)
+print("IDK133")
+--LAB
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4904, 480, 1711)
 local targetPosition = Vector3.new(4866.918945, 473.957062, 1660.181519)
 teleportPlayer(targetPosition, speed)
@@ -184,6 +205,8 @@ local targetPosition = Vector3.new(4878.226074, 475.148499, 1637.887695)
 teleportPlayer(targetPosition, speed)
 
 wait(2)
+print("IDK134")
+---CR
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4872, 468, 1468)
 local targetPosition = Vector3.new(4874.949707, 495.450226, 921.373840)
 teleportPlayer(targetPosition, speed)
@@ -204,17 +227,27 @@ teleportPlayer(targetPosition, speed)
 wait(2)
 local targetPosition = Vector3.new(5789.40137, 410.392822, 640.246948)
 teleportPlayer(targetPosition, speed)
-wait(1)
+wait()
+---CR LOOT ROOM
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(5802, 327, 620)
-local targetPosition = Vector3.new(5739.578125, 321.553833, 643.673889)
+wait(2)
+
+local targetPosition = Vector3.new(5740.885742, 321.553864, 645.985168)
 teleportPlayer(targetPosition, speed)
-local targetPosition = Vector3.new(5740.280762, 321.553833, 633.917114)
+wait(0.5)
+local targetPosition = Vector3.new(5740.620605, 321.553894, 629.594238)
 teleportPlayer(targetPosition, speed)
-local targetPosition = Vector3.new(5753.162109, 321.553833, 609.919800)
+wait(0.5)
+local targetPosition = Vector3.new(5753.525391, 321.553833, 610.179199)
 teleportPlayer(targetPosition, speed)
-local targetPosition = Vector3.new(5766.637695, 321.553894, 609.763855)
+wait(0.5)
+local targetPosition = Vector3.new(5766.655762, 321.553894, 610.180359)
 teleportPlayer(targetPosition, speed)
-wait(1)
+wait(0.5)
+---- DONE CR LOOT ROOM
+wait(2)
+
+
 
 game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(5798.93799, 328.580139, 633.944214)
 wait(1)
@@ -251,3 +284,74 @@ local targetPosition = Vector3.new(-54.510181, 3638.889648, 387.565491)
 teleportPlayer(targetPosition, speed)
 local targetPosition = Vector3.new(-78.630043, 3638.889893, 390.364990)
 teleportPlayer(targetPosition, speed)
+wait(1)
+game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(4903, 1009, 1375)
+wait(1)
+-- Set CanCollide to true for all children of Workspace.Trinkets
+for _, trinket in pairs(game.Workspace.Trinkets:GetChildren()) do
+    trinket.CanCollide = true
+end
+
+wait() -- Wait for a short period
+
+-- Create a new anchored part in Workspace
+local part = Instance.new("Part")
+part.Parent = game.Workspace
+part.Anchored = true
+part.Name = "REALONE"
+part.CFrame = CFrame.new(4602, 686.889893, 1656, 0.999986768, -1.30806648e-05, -0.00514548831, 1.39371441e-05, 1, 0.000166416779, 0.00514548598, -0.000166486279, 0.999986768)
+part.Size = Vector3.new(450, 3, 450)
+
+wait() -- Wait for a short period
+
+-- Retrieve touching parts and rename them if they are trinkets
+local touchingParts = part:GetTouchingParts()
+for _, touchingPart in pairs(touchingParts) do
+    if touchingPart:IsDescendantOf(game.Workspace.Trinkets) then
+        touchingPart.Name = "TrinketTouched"
+    end
+end
+
+wait() -- Wait for a short period
+
+-- Destroy the created part
+part:Destroy()
+
+wait(1)
+
+local player = game.Players.LocalPlayer -- Assuming this script runs on the client-side
+
+-- Function to teleport the player to a target position
+function teleportPlayer(targetPosition)
+    player.Character:SetPrimaryPartCFrame(CFrame.new(targetPosition))
+end
+
+-- Function to find all "TrinketTouched" parts and teleport to each one
+function teleportToTrinkets()
+    while true do
+        -- Find all "TrinketTouched" parts
+        local trinkets = game.Workspace.Trinkets:GetChildren()
+        local foundTrinkets = false
+        
+        for _, trinket in pairs(trinkets) do
+            if trinket.Name == "TrinketTouched" then
+                foundTrinkets = true
+                local targetPosition = trinket.Position + Vector3.new(0, 5, 0) -- Offset to avoid collisions
+                teleportPlayer(targetPosition)
+                wait(1) -- Adjust this wait time as needed to allow the player to pick up the trinket
+                break
+            end
+        end
+        
+        if not foundTrinkets then
+            break -- Exit the loop if no "TrinketTouched" parts are found
+        end
+        
+        wait(0.1) -- Small delay to avoid potential infinite loops
+    end
+end
+
+teleportToTrinkets()
+print("Done")
+wait(1)
+game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2855, 288, -92)
