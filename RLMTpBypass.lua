@@ -37,13 +37,13 @@ assert(Player.Character, "Player must be spawned")
 local function clickOnTrinket(trinket)
     pcall(function()
         if trinket:FindFirstChild("ClickPart") then
-            task.wait(0.05)
+            task.wait(0.03)
             local clickPart = trinket.ClickPart:FindFirstChild("ClickDetector")
             if clickPart then
-                fireclickdetector(clickPart, 20)
+                fireclickdetector(clickPart, 25)
             end
         elseif trinket:FindFirstChild("ClickDetector") then
-            fireclickdetector(trinket.ClickDetector, 20)
+            fireclickdetector(trinket.ClickDetector, 25)
         end
     end)
 end
@@ -51,12 +51,12 @@ end
 -- Main loop to check for nearby trinkets and click them
 pcall(function()
     coroutine.wrap(function()
-        while task.wait(0.25) do
+        while task.wait(0.20) do
             pcall(function()
                 local playerPosition = Player.Character:WaitForChild("HumanoidRootPart").Position
                 for _, trinket in pairs(workspace.Trinkets:GetChildren()) do
                     local trinketPosition = trinket.Position
-                    if (playerPosition - trinketPosition).Magnitude < 20 then
+                    if (playerPosition - trinketPosition).Magnitude < 25 then
                         clickOnTrinket(trinket)
                     end
                 end
