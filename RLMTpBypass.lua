@@ -1,3 +1,18 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+wait(1)
+-- // Queue this script to re-execute on teleport
+pcall(function()
+    queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/YhRyptix/RLM/refs/heads/main/RLMTpBypass.lua'))()")
+end)
+
+-- // Optional: Wait for player, character, etc.
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+repeat wait() until LocalPlayer and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
 local w = library:CreateWindow("RypScripts")
 local llu = library:CreateWindow("Illu Checker")
@@ -8,7 +23,6 @@ local exploits = w:CreateFolder("Exploits")
 local tab_collectors = w:CreateFolder("Collectors") -- New folder for collector stuff
 local misc = w:CreateFolder("Misc")
 
-queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/YhRyptix/RLM/refs/heads/main/RLMTpBypass.lua'))()")
 
 
 
