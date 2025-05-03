@@ -339,6 +339,7 @@ exploits:Button("Arti Detector",function()
             [rgbToColor3(123, 174, 255)] = {Name = "artifactgameDS", Message = "found day stone"},
             [rgbToColor3(201, 169, 255)] = {Name = "artifactgameLannisConcoction", Message = "found Lannis Concoction"},
             [rgbToColor3(255, 89, 89)] = {Name = "artifactgamePhilo", Message = "found Philo stone"},
+            [rgbToColor3(128, 187, 219)] = {Name = "artifactgameFF", Message = "found FF"},
         },
     
         BrickColors = {
