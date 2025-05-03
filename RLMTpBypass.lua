@@ -2,11 +2,10 @@ if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 wait(1)
--- // Queue this script to re-execute on teleport
+
 pcall(function()
     queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/YhRyptix/RLM/refs/heads/main/RLMTpBypass.lua'))()")
 end)
-
 
 local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
 local w = library:CreateWindow("RypScripts")
@@ -15,17 +14,8 @@ local lluX = llu:CreateFolder("Main")
 local autopickup= w:CreateFolder("Autopickup")
 local forge = w:CreateFolder("Forge")
 local exploits = w:CreateFolder("Exploits")
-local tab_collectors = w:CreateFolder("Collectors") -- New folder for collector stuff
+local tab_collectors = w:CreateFolder("Collectors") 
 local misc = w:CreateFolder("Misc")
-
-
-
-
-
-
-
-
-
 
 local yourvariable = forge:Label("Unknown amount of trinkets at forge",{
     TextSize = 25; 
@@ -33,18 +23,12 @@ local yourvariable = forge:Label("Unknown amount of trinkets at forge",{
     BgColor = Color3.new(0.011765, 0.678431, 0.211765);
 })
 
-
-
-
-
-
 local label_collector = tab_collectors:Label("No collector open", {
     TextSize = 15,
     TextColor = Color3.fromRGB(255, 255, 255),
-    BgColor = Color3.fromRGB(207, 85, 255) -- Initial red
+    BgColor = Color3.fromRGB(207, 85, 255) 
 })
 
---// 📦 Collector Door Detection
 local collector_doors = {
     workspace.Map.beachCollectorDoor,
     workspace.Map.desertCollectorDoor,
@@ -54,9 +38,6 @@ local collector_doors = {
 
 local current_collector_door = nil
 
-
---// 🟦 Button: TP to Collector Door
-
 local function teleport_to_cframe(cframe)
     local root = workspace.Live[game.Players.LocalPlayer.Name]:FindFirstChild("HumanoidRootPart")
     if root then
@@ -64,21 +45,17 @@ local function teleport_to_cframe(cframe)
     end
 end
 
---// Compatibility for request
 local httprequest = httprequest or request or syn and syn.request or http and http.request or fluxus and fluxus.request or krnl_request
 
---// Services
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
 
---// Vars
 local PlaceId = game.PlaceId
 local JobId = game.JobId
 
---// Functions
 local function notify(title, msg)
-    print(`[Serverhop] {title} - {msg}`) -- Change this to use your own UI if you want
+    print(`[Serverhop] {title} - {msg}`) 
 end
 
 local function serverhop()
@@ -118,7 +95,6 @@ local function serverhop()
     end
 end
 
-
 tab_collectors:Button("Teleport to Open Collector", function()
     if current_collector_door and current_collector_door:IsDescendantOf(workspace) then
         teleport_to_cframe(current_collector_door.CFrame)
@@ -127,44 +103,39 @@ tab_collectors:Button("Teleport to Open Collector", function()
     end
 end)
 
---// 🔁 Toggle: Enable Collector Detection
 tab_collectors:Toggle("Enable Collector Detection", function(state)
     collector_detection_enabled = state
     if not state then
         label_collector:Refresh("No collector open")
-        label_collector.BgColor = Color3.fromRGB(85, 144, 255) -- Reset color when disabled
+        label_collector.BgColor = Color3.fromRGB(85, 144, 255) 
     end
 end)
 
 task.spawn(function()
     while task.wait(0.1) do
-        if collector_detection_enabled then -- Only run if toggle is enabled
+        if collector_detection_enabled then 
             for _, door in ipairs(collector_doors) do
                 if door.Transparency == 1 and current_collector_door ~= door then
                     current_collector_door = door
                     label_collector:Refresh("Collector Opened at " .. door.Name:gsub("CollectorDoor", ""))
                     label_collector.TextColor = Color3.fromRGB(255, 255, 255)
-                    label_collector.BgColor = Color3.fromRGB(0, 255, 0) -- Change to green when open
+                    label_collector.BgColor = Color3.fromRGB(0, 255, 0) 
                     break
                 elseif door.Transparency == 0 and current_collector_door == door then
                     current_collector_door = nil
                     label_collector:Refresh("No collector open")
                     label_collector.TextColor = Color3.fromRGB(255, 255, 255)
-                    label_collector.BgColor = Color3.fromRGB(255, 85, 85) -- Back to red when closed
+                    label_collector.BgColor = Color3.fromRGB(255, 85, 85) 
                 end
             end
         end
     end
 end)
 
-
-
 misc:Button("Server Hop",function()
 serverhop()
 
-    
     end)
-
 
 autopickup:Button("Autopickup",function()
 
@@ -321,17 +292,15 @@ exploits:Toggle("Tp Bypass (toggle while dead)",function(bool)
 end)
 
 exploits:Button("Arti Detector",function()
-  
-
 
     local function rgbToColor3(r, g, b)
         return Color3.new(r / 255, g / 255, b / 255)
     end
-    
+
     local TrinketConfig = {
         DefaultName = "trinketlol",
         PositionToRemove = Vector3.new(18050.765625, 395.95458984375, 37243.8828125),
-    
+
         PointLights = {
             [rgbToColor3(255, 255, 255)] = {Name = "artifactgameWKA", Message = "found WKA"},
             [rgbToColor3(132, 255, 0)] = {Name = "ice essence", Message = "found ice essence"},
@@ -341,7 +310,7 @@ exploits:Button("Arti Detector",function()
             [rgbToColor3(255, 89, 89)] = {Name = "artifactgamePhilo", Message = "found Philo stone"},
             [rgbToColor3(128, 187, 219)] = {Name = "artifactgameFF", Message = "found FF"},
         },
-    
+
         BrickColors = {
             ["Olivine"] = {Name = "artifactgamenature", Message = "found nature"},
             ["New Yeller"] = {Name = "artifactgamesc", Message = "found sc"},
@@ -353,12 +322,12 @@ exploits:Button("Arti Detector",function()
             ["Black"] = {Name = "artifactgameNS", Message = "found NightStone"},
             ["Daisy orange"] = {Name = "artifactgamescroomkey", Message = "found scroom key"},
         },
-    
+
         ParticleEmitters = {
             ["rbxassetid://1536547385"] = {
-                Name = "artifactgame", -- placeholder, changes dynamically
+                Name = "artifactgame", 
                 ParentName = "artifactgame",
-                Message = "found pd/ma" -- will be overridden dynamically
+                Message = "found pd/ma" 
             },
             ["rbxassetid://16897662240"] = {
                 Name = "artifactgameWind",
@@ -371,26 +340,26 @@ exploits:Button("Arti Detector",function()
                 Message = "found ah"
             },
         },
-    
+
         ManualWeldName = "Ornament",
         ColorTolerance = 0.1,
     }
-    
+
     local function colorsAreClose(color1, color2, tolerance)
         return math.abs(color1.R - color2.R) < tolerance and
                math.abs(color1.G - color2.G) < tolerance and
                math.abs(color1.B - color2.B) < tolerance
     end
-    
+
     local function handleTrinket(trinket)
         local shouldRenameToOrnament = false
         local foundSomething = false
-    
+
         if trinket.Position == TrinketConfig.PositionToRemove then
             trinket:Destroy()
             return
         end
-    
+
         for _, descendant in pairs(trinket:GetDescendants()) do
             if descendant:IsA("PointLight") then
                 local matched = false
@@ -407,25 +376,24 @@ exploits:Button("Arti Detector",function()
                     print("PointLight color does not match any target color.")
                     trinket.Name = "artifactgameUnknown"
                 end
-    
+
             elseif descendant:IsA("MeshPart") or descendant:IsA("Part") then
                 local brickColor = descendant.Parent.BrickColor
                 local brickColorName = brickColor.Name
-    
+
                 local config = TrinketConfig.BrickColors[brickColorName]
                 if config then
                     descendant.Parent.Name = config.Name
                     print(config.Message)
                     foundSomething = true
                 end
-    
+
             elseif descendant:IsA("ParticleEmitter") then
                 local config = TrinketConfig.ParticleEmitters[descendant.Texture]
                 if config then
                     local nameToUse = config.Name
                     local messageToPrint = config.Message
-    
-                    -- Special case for PD vs MA (based on LightEmission)
+
                     if descendant.Texture == "rbxassetid://1536547385" then
                         if descendant.LightEmission == 0.800000011920929 then
 
@@ -437,7 +405,7 @@ exploits:Button("Arti Detector",function()
                             messageToPrint = "found PD/PF"
                         end
                     end
-    
+
                     descendant.Name = nameToUse
                     if descendant.Parent and descendant.Parent.Parent then
                         descendant.Parent.Parent.Name = config.ParentName or nameToUse
@@ -447,25 +415,22 @@ exploits:Button("Arti Detector",function()
                 end
             end
         end
-    
+
         local manualWeld = trinket:FindFirstChildOfClass("ManualWeld")
         if manualWeld then
             shouldRenameToOrnament = true
             foundSomething = true
         end
-    
+
         if shouldRenameToOrnament then
             trinket.Name = TrinketConfig.ManualWeldName
         end
     end
-    
+
     for _, trinket in pairs(game.Workspace.Trinkets:GetChildren()) do
         trinket.Name = TrinketConfig.DefaultName
         handleTrinket(trinket)
     end
-    
-
-    
 
 end)
 
@@ -535,30 +500,20 @@ game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFram
     end
 end)
 
-
-
-
-
-
-
--- Label to show the status
 local yourvariable = lluX:Label("No illu", {
     TextSize = 25, 
     TextColor = Color3.fromRGB(255,255,255),
     BgColor = Color3.new(0.011765, 0.678431, 0.211765)
 })
 
--- Sound setup
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://8853003751" -- Replace if needed
+sound.SoundId = "rbxassetid://8853003751" 
 sound.Volume = 1
 sound.Parent = game:GetService("SoundService")
 
--- State tracking
 local soundPlayed = false
 local currentIllu = nil
 
--- Function to check for "Observe" in character or backpack
 local function checkForIllu()
     local found = false
     for _, player in pairs(game.Players:GetPlayers()) do
@@ -593,7 +548,6 @@ local function checkForIllu()
     end
 end
 
--- Always run
 game:GetService("RunService").Heartbeat:Connect(function()
     checkForIllu()
 end)
