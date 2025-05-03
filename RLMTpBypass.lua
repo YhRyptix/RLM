@@ -8,7 +8,7 @@ local exploits = w:CreateFolder("Exploits")
 local tab_collectors = w:CreateFolder("Collectors") -- New folder for collector stuff
 local misc = w:CreateFolder("Misc")
 
-
+queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/YhRyptix/RLM/refs/heads/main/RLMTpBypass.lua'))()")
 
 
 
