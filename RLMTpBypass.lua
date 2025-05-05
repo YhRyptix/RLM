@@ -1,67 +1,217 @@
+--[[
+    RypScripts - A comprehensive script for various game functionalities
+    Maintained by: YhRyptix
+    Features: Autopickup, Forge utilities, Collector detection, Exploits, and more
+    
+    MODULAR DESIGN WITH CLEAR VISUAL MARKERS
+]]
+    
+
+--###############################################
+--########### INITIAL SETUP SECTION #############
+--###############################################
+
+-- Wait for game to load
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 wait(1)
 
+-- Setup teleport persistence
 pcall(function()
     queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/YhRyptix/RLM/refs/heads/main/RLMTpBypass.lua'))()")
 end)
 
-local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
-local w = library:CreateWindow("RypScripts")
-local llu = library:CreateWindow("Illu Checker")
-local lluX = llu:CreateFolder("Main")
-local autopickup= w:CreateFolder("Autopickup")
-local forge = w:CreateFolder("Forge")
-local exploits = w:CreateFolder("Exploits")
-local tab_collectors = w:CreateFolder("Collectors") 
-local misc = w:CreateFolder("Misc")
+--###############################################
+--############# UI SETUP SECTION ################
+--###############################################
 
-local yourvariable = forge:Label("Unknown amount of trinkets at forge",{
-    TextSize = 25; 
-    TextColor = Color3.fromRGB(255,255,255);
-    BgColor = Color3.new(0.011765, 0.678431, 0.211765);
-})
+local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3'))()
+local mainWindow = library:CreateWindow("RypScripts")
+local illuWindow = library:CreateWindow("Illu Checker")
 
-local label_collector = tab_collectors:Label("No collector open", {
-    TextSize = 15,
-    TextColor = Color3.fromRGB(255, 255, 255),
-    BgColor = Color3.fromRGB(207, 85, 255) 
-})
+-- Create UI folders
+local illuFolder = illuWindow:CreateFolder("Main")
+local autopickupFolder = mainWindow:CreateFolder("Autopickup")
+local forgeFolder = mainWindow:CreateFolder("Forge")
+local exploitsFolder = mainWindow:CreateFolder("Exploits")
+local collectorsFolder = mainWindow:CreateFolder("Collectors") 
+local miscFolder = mainWindow:CreateFolder("Misc")
 
-local collector_doors = {
-    workspace.Map.beachCollectorDoor,
-    workspace.Map.desertCollectorDoor,
-    workspace.Map.plainsCollectorDoor,
-    workspace.Map.tundraCollectorDoor
-}
+--###############################################
+--########## GLOBAL VARIABLES SECTION ###########
+--###############################################
 
-local current_collector_door = nil
+local collector_detection_enabled = false
+local tp_bypass_enabled = false
+local autopickup_enabled = false
+local fullbright_enabled = false
+local noclip_enabled = false
+local fly_enabled = false
+local nofog_enabled = false
+local fogHeartbeatConnection = nil
 
+--###############################################
+--########## UTILITY FUNCTIONS SECTION ##########
+--###############################################
+
+--███████████████████████████████████████████████--
+--               teleport_to_cframe              --
+--███████████████████████████████████████████████--
 local function teleport_to_cframe(cframe)
     local root = workspace.Live[game.Players.LocalPlayer.Name]:FindFirstChild("HumanoidRootPart")
     if root then
         root.CFrame = cframe + Vector3.new(0, 5, 0)
     end
 end
+--███████████████████████████████████████████████--
 
-local httprequest = httprequest or request or syn and syn.request or http and http.request or fluxus and fluxus.request or krnl_request
-
-local HttpService = game:GetService("HttpService")
-local TeleportService = game:GetService("TeleportService")
-local Players = game:GetService("Players")
-
-local PlaceId = game.PlaceId
-local JobId = game.JobId
-
-local function notify(title, msg)
-    print(`[Serverhop] {title} - {msg}`) 
+--███████████████████████████████████████████████--
+--              getRandomCoordinate              --
+--███████████████████████████████████████████████--
+local function getRandomCoordinate(min, max)
+    return math.random(min, max)
 end
+--███████████████████████████████████████████████--
 
-local function serverhop()
-    if not httprequest then
-        return notify("Error", "Your exploit does not support httprequest.")
+--███████████████████████████████████████████████--
+--                 getFullPath                  --
+--███████████████████████████████████████████████--
+local function getFullPath(instance)
+    local path = instance.Name
+    while instance.Parent do
+        instance = instance.Parent
+        path = instance.Name .. "." .. path
     end
+    return path
+end
+--███████████████████████████████████████████████--
+
+--###############################################
+--######### FULLBRIGHT FUNCTION SECTION #########
+--###############################################
+
+--███████████████████████████████████████████████--
+--                  fullBright                   --
+--███████████████████████████████████████████████--
+local function fullBright(toggle)
+    fullbright_enabled = toggle
+    
+    if toggle then
+        local Lighting = game:GetService("Lighting")
+        local oldAmbient = Lighting.Ambient
+        local oldBrightness = Lighting.Brightness
+        
+        Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+        Lighting.Brightness = 1
+        
+        -- Keep fullbright enabled even if game tries to change it
+        Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
+            if not fullbright_enabled then return end
+            Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+            Lighting.Brightness = 1
+        end)
+    else
+        Lighting.Ambient = oldAmbient
+        Lighting.Brightness = oldBrightness
+    end
+end
+--███████████████████████████████████████████████--
+
+--###############################################
+--########## NOCLIP FUNCTION SECTION ############
+--###############################################
+
+--███████████████████████████████████████████████--
+--                    noClip                     --
+--███████████████████████████████████████████████--
+local function noClip(toggle)
+    noclip_enabled = toggle
+    
+    if toggle then
+        game:GetService("RunService").Stepped:Connect(function()
+            if not noclip_enabled then return end
+            
+            local character = game.Players.LocalPlayer.Character
+            if not character then return end
+            
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end)
+    end
+end
+--███████████████████████████████████████████████--
+
+--###############################################
+--########### FLY FUNCTION SECTION ##############
+--###############################################
+
+--███████████████████████████████████████████████--
+--                      fly                      --
+--███████████████████████████████████████████████--
+local flySpeed = 100 -- Default speed set to 100
+local flyBV
+
+local function fly(toggle)
+    fly_enabled = toggle
+    
+    if not toggle then
+        if flyBV and flyBV.Parent then
+            flyBV:Destroy()
+        end
+        return
+    end
+    
+    flyBV = Instance.new("BodyVelocity")
+    flyBV.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    
+    game:GetService("RunService").Heartbeat:Connect(function()
+        if not fly_enabled then return end
+        
+        local rootPart = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if not rootPart then return end
+        
+        local camera = workspace.CurrentCamera
+        if not camera then return end
+        
+        if not flyBV.Parent then
+            flyBV.Parent = rootPart
+        end
+        
+        local UserInputService = game:GetService("UserInputService")
+        local moveVector = Vector3.new(
+            UserInputService:IsKeyDown(Enum.KeyCode.D) and 1 or UserInputService:IsKeyDown(Enum.KeyCode.A) and -1 or 0,
+            UserInputService:IsKeyDown(Enum.KeyCode.Space) and 1 or UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) and -1 or 0,
+            UserInputService:IsKeyDown(Enum.KeyCode.W) and -1 or UserInputService:IsKeyDown(Enum.KeyCode.S) and 1 or 0
+        )
+        
+        flyBV.Velocity = camera.CFrame:VectorToWorldSpace(moveVector) * flySpeed
+    end)
+end
+--███████████████████████████████████████████████--
+
+--###############################################
+--####### SERVER HOP FUNCTION SECTION #########
+--###############################################
+
+--███████████████████████████████████████████████--
+--                  serverhop                   --
+--███████████████████████████████████████████████--
+local function serverhop()
+    local httprequest = httprequest or request or syn and syn.request or http and http.request or fluxus and fluxus.request or krnl_request
+    if not httprequest then
+        return print("[Serverhop] Error - Your exploit does not support httprequest.")
+    end
+
+    local HttpService = game:GetService("HttpService")
+    local TeleportService = game:GetService("TeleportService")
+    local Players = game:GetService("Players")
+
+    local PlaceId = game.PlaceId
+    local JobId = game.JobId
 
     local servers = {}
     local success, response = pcall(function()
@@ -74,11 +224,10 @@ local function serverhop()
     end)
 
     if not success then
-        return notify("Error", "Failed to get server list.")
+        return print("[Serverhop] Error - Failed to get server list.")
     end
 
     local body = HttpService:JSONDecode(response.Body)
-
     if body and body.data then
         for _, v in ipairs(body.data) do
             if typeof(v) == "table" and tonumber(v.playing) and tonumber(v.maxPlayers)
@@ -91,80 +240,83 @@ local function serverhop()
     if #servers > 0 then
         TeleportService:TeleportToPlaceInstance(PlaceId, servers[math.random(1, #servers)], Players.LocalPlayer)
     else
-        notify("Serverhop", "No available servers found.")
+        print("[Serverhop] No available servers found.")
     end
 end
+--███████████████████████████████████████████████--
 
-tab_collectors:Button("Teleport to Open Collector", function()
+--###############################################
+--####### COLLECTOR DETECTION SECTION ###########
+--###############################################
+
+local collector_doors = {
+    workspace.Map.beachCollectorDoor,
+    workspace.Map.desertCollectorDoor,
+    workspace.Map.plainsCollectorDoor,
+    workspace.Map.tundraCollectorDoor
+}
+
+local current_collector_door = nil
+local collector_label = collectorsFolder:Label("No collector open", {
+    TextSize = 15,
+    TextColor = Color3.fromRGB(255, 255, 255),
+    BgColor = Color3.fromRGB(207, 85, 255) 
+})
+
+--███████████████████████████████████████████████--
+--           update_collector_detection         --
+--███████████████████████████████████████████████--
+local function update_collector_detection()
+    for _, door in ipairs(collector_doors) do
+        if door.Transparency == 1 and current_collector_door ~= door then
+            current_collector_door = door
+            collector_label:Refresh("Collector Opened at " .. door.Name:gsub("CollectorDoor", ""))
+            collector_label.BgColor = Color3.fromRGB(0, 255, 0) 
+            break
+        elseif door.Transparency == 0 and current_collector_door == door then
+            current_collector_door = nil
+            collector_label:Refresh("No collector open")
+            collector_label.BgColor = Color3.fromRGB(255, 85, 85) 
+        end
+    end
+end
+--███████████████████████████████████████████████--
+
+-- UI Buttons for Collector
+collectorsFolder:Button("Teleport to Open Collector", function()
     if current_collector_door and current_collector_door:IsDescendantOf(workspace) then
         teleport_to_cframe(current_collector_door.CFrame)
     else
-        label_collector:Refresh("No collector open")
+        collector_label:Refresh("No collector open")
     end
 end)
 
-tab_collectors:Toggle("Enable Collector Detection", function(state)
+collectorsFolder:Toggle("Enable Collector Detection", function(state)
     collector_detection_enabled = state
     if not state then
-        label_collector:Refresh("No collector open")
-        label_collector.BgColor = Color3.fromRGB(85, 144, 255) 
+        collector_label:Refresh("No collector open")
+        collector_label.BgColor = Color3.fromRGB(85, 144, 255) 
     end
 end)
 
+-- Collector detection loop
 task.spawn(function()
     while task.wait(0.1) do
         if collector_detection_enabled then 
-            for _, door in ipairs(collector_doors) do
-                if door.Transparency == 1 and current_collector_door ~= door then
-                    current_collector_door = door
-                    label_collector:Refresh("Collector Opened at " .. door.Name:gsub("CollectorDoor", ""))
-                    label_collector.TextColor = Color3.fromRGB(255, 255, 255)
-                    label_collector.BgColor = Color3.fromRGB(0, 255, 0) 
-                    break
-                elseif door.Transparency == 0 and current_collector_door == door then
-                    current_collector_door = nil
-                    label_collector:Refresh("No collector open")
-                    label_collector.TextColor = Color3.fromRGB(255, 255, 255)
-                    label_collector.BgColor = Color3.fromRGB(255, 85, 85) 
-                end
-            end
+            update_collector_detection()
         end
     end
 end)
 
-misc:Button("Server Hop",function()
-serverhop()
+--###############################################
+--######## AUTOPICKUP FUNCTION SECTION #########
+--###############################################
 
-    end)
-
-autopickup:Button("Autopickup",function()
-
-repeat
-    print("Waiting for the game to load...")
-    task.wait()
-until game:IsLoaded()
-print("Game has fully loaded!")
-
-local Player = game:GetService("Players").LocalPlayer
-print("Local player acquired:", Player)
-
-assert(Player.Character, "Player must be spawned")
-print("Player character found:", Player.Character)
-
-local function getFullPath(instance)
-    local path = instance.Name
-    while instance.Parent do
-        instance = instance.Parent
-        path = instance.Name .. "." .. path
-    end
-    return path
-end
-
+--███████████████████████████████████████████████--
+--               clickOnTrinket                 --
+--███████████████████████████████████████████████--
 local function clickOnTrinket(trinket)
-    print("Attempting to click on trinket:", trinket.Name)
-
     local clickDetector = trinket:FindFirstChildOfClass("ClickDetector")
-
     if not clickDetector then
         for _, descendant in pairs(trinket:GetDescendants()) do
             if descendant:IsA("ClickDetector") then
@@ -175,124 +327,210 @@ local function clickOnTrinket(trinket)
     end
 
     if clickDetector then
-        local fullPath = getFullPath(clickDetector)
         task.wait(0.05)
         fireclickdetector(clickDetector)
-
     end
 end
+--███████████████████████████████████████████████--
 
-pcall(function()
-    coroutine.resume(coroutine.create(function()
-        while task.wait(0.020) do  
+--███████████████████████████████████████████████--
+--               autopickup_loop                --
+--███████████████████████████████████████████████--
+local function autopickup_loop()
+    local Player = game:GetService("Players").LocalPlayer
+    repeat task.wait() until Player.Character
+    
+    while task.wait(0.02) do
+        if autopickup_enabled then
             local playerPosition = Player.Character:WaitForChild("HumanoidRootPart").Position
-
             for _, trinket in pairs(workspace.Trinkets:GetChildren()) do
-                local trinketPosition = trinket.Position
-                local distance = (playerPosition - trinketPosition).Magnitude
-
-                if distance < 25 and shared.toggle ~= false then
+                local distance = (playerPosition - trinket.Position).Magnitude
+                if distance < 25 then
                     clickOnTrinket(trinket)
                 end
             end
         end
-    end))
+    end
+end
+--███████████████████████████████████████████████--
+
+-- UI Buttons for Autopickup
+autopickupFolder:Button("Autopickup", function()
+    task.spawn(autopickup_loop)
 end)
 
+autopickupFolder:Toggle("Enable Autopickup", function(state)
+    autopickup_enabled = state
 end)
 
-autopickup:Toggle("Enable Autopickup",function(bool)
-    shared.toggle = bool
-    print(shared.toggle)
-end)
+--###############################################
+--########### FORGE FUNCTION SECTION ###########
+--###############################################
 
-forge:Button("Find trinkets @ forge",function()
+local forge_label = forgeFolder:Label("Unknown amount of trinkets at forge", {
+    TextSize = 25, 
+    TextColor = Color3.fromRGB(255,255,255),
+    BgColor = Color3.new(0.011765, 0.678431, 0.211765)
+})
 
-local targetPosition = Vector3.new(5681, 1100, -4469)
-local renameRadius = 1000 
-local Count;
-
-local function renameNearbyTrinkets()
-    local renamedCount = 0 
+--███████████████████████████████████████████████--
+--             find_forge_trinkets              --
+--███████████████████████████████████████████████--
+local function find_forge_trinkets()
+    local targetPosition = Vector3.new(5681, 1100, -4469)
+    local renameRadius = 1000 
+    local count = 0
 
     for _, trinket in pairs(workspace.Trinkets:GetChildren()) do 
-        local trinketPosition = trinket.Position
-        local distance = (targetPosition - trinketPosition).Magnitude
-
+        local distance = (targetPosition - trinket.Position).Magnitude
         if distance < renameRadius then
             trinket.Name = "ForgeTrinket"
-            renamedCount = renamedCount + 1 
-            Count = renamedCount
+            count = count + 1
         end
     end
 
+    forge_label:Refresh("Trinkets at forge ".. count)
 end
+--███████████████████████████████████████████████--
 
-renameNearbyTrinkets()
-
-yourvariable:Refresh("Trinkets at forge ".. Count)
-
-end)
-
-forge:Button("Collect all trinkets @ forge",function()
-
-local Player = game.Players.LocalPlayer
-
+--███████████████████████████████████████████████--
+--           collect_forge_trinkets             --
+--███████████████████████████████████████████████--
+local function collect_forge_trinkets()
+    local Player = game.Players.LocalPlayer
     local function teleportPlayer(targetPosition)
-        Player.Character:SetPrimaryPartCFrame(CFrame.new(targetPosition))
+        Player.Character:SetPrimaryPartCFrame(CFrame.new(targetPosition)) -- Remove one parenthesis here
     end
 
-    local function teleportToForgeTrinkets()
-        while true do
+    while true do
+        local found = false
+        for _, trinket in pairs(workspace.Trinkets:GetChildren()) do
+            if trinket.Name == "ForgeTrinket" then
+                found = true
+                teleportPlayer(trinket.Position + Vector3.new(0, 5, 0)) -- And here
+                task.wait()
+                break
+            end
+        end
+        if not found then break end
+    end
+end
+--███████████████████████████████████████████████--
 
-            local trinkets = game.Workspace.Trinkets:GetChildren()
-            local foundTrinkets = false
+-- UI Buttons for Forge
+forgeFolder:Button("Find trinkets @ forge", find_forge_trinkets)
+forgeFolder:Button("Collect all trinkets @ forge", collect_forge_trinkets)
 
-            for _, trinket in pairs(trinkets) do
-                if trinket.Name == "ForgeTrinket" then
-                    foundTrinkets = true
-                    local targetPosition = trinket.Position + Vector3.new(0, 5, 0) 
-                    teleportPlayer(targetPosition)
-                     task.wait() 
-                    break
+--###############################################
+--########## EXPLOITS FUNCTION SECTION #########
+--###############################################
+
+--███████████████████████████████████████████████--
+--              delete_killbricks               --
+--███████████████████████████████████████████████--
+local function delete_killbricks()
+    for _, v in pairs(workspace.Map:GetDescendants()) do
+        if string.find(v.Name, "KillBrick") or string.find(v.Name, "KillFire") or string.find(v.Name, "Lava") then 
+            for _, a in pairs(v:GetChildren()) do
+                if a:IsA("TouchTransmitter") then 
+                    a:Destroy()
                 end
             end
+        end
+    end 
+end
+--███████████████████████████████████████████████--
 
-            if not foundTrinkets then
-                break 
-            end
+--███████████████████████████████████████████████--
+--               reset_character                --
+--███████████████████████████████████████████████--
+local function reset_character()
+    game.Players.LocalPlayer.Character.Head:Destroy()
+end
+--███████████████████████████████████████████████--
 
-            task.wait() 
+--███████████████████████████████████████████████--
+--                     noFog                    --
+--███████████████████████████████████████████████--
+local function noFog(toggle)
+    nofog_enabled = toggle
+    local Lighting = game:GetService("Lighting")
+    
+    if toggle then
+        -- Disconnect previous connection if exists
+        if fogHeartbeatConnection then
+            fogHeartbeatConnection:Disconnect()
+            fogHeartbeatConnection = nil
+        end
+        
+        -- Set initial values
+        Lighting.AreaFogBounds.MaxValue = 99999
+        Lighting.AreaFogBounds.MinValue = 99999
+        Lighting.AreaFogBounds.Value = 99999
+        
+        -- Keep fog disabled even if game tries to change it
+        fogHeartbeatConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not nofog_enabled then return end
+            Lighting.AreaFogBounds.MaxValue = 99999
+            Lighting.AreaFogBounds.MinValue = 99999
+            Lighting.AreaFogBounds.Value = 99999
+        end)
+    else
+        -- Just disconnect the heartbeat without resetting values
+        if fogHeartbeatConnection then
+            fogHeartbeatConnection:Disconnect()
+            fogHeartbeatConnection = nil
         end
     end
+end
+--███████████████████████████████████████████████--
 
-    teleportToForgeTrinkets()
-
+-- UI Buttons for Exploits
+exploitsFolder:Button("Delete killbricks", delete_killbricks)
+exploitsFolder:Button("Reset", reset_character)
+exploitsFolder:Toggle("Tp Bypass (toggle while dead)", function(state)
+    tp_bypass_enabled = state
 end)
 
-exploits:Button("Delete killbricks",function()
-for i,v in pairs(game.Workspace.Map:GetDescendants()) do
-    if string.find(v.Name, "KillBrick") or string.find(v.Name, "KillFire") or string.find(v.Name, "Lava") then 
-    for z,a in pairs(v:GetChildren()) do
-        if a:IsA("TouchTransmitter") then 
-            a:Destroy()
-            print("gone")
-        end
-    end
-    end
-end 
+-- Add new exploit features to UI
+exploitsFolder:Toggle("Fullbright", function(state)
+    fullbright_enabled = state
+    fullBright(state)
 end)
 
-exploits:Button("Reset",function()
-game.Players.LocalPlayer.Character.Head:Destroy()
+-- Keybinds only (no toggles) for fly and noclip
+exploitsFolder:Bind("Noclip Toggle", Enum.KeyCode.F1, function()
+    noclip_enabled = not noclip_enabled
+    noClip(noclip_enabled)
 end)
 
-exploits:Toggle("Tp Bypass (toggle while dead)",function(bool)
-    enabled = bool
+exploitsFolder:Bind("Fly Toggle", Enum.KeyCode.F1, function()
+    fly_enabled = not fly_enabled
+    fly(fly_enabled)
 end)
 
-exploits:Button("Arti Detector",function()
+exploitsFolder:Slider("Fly Speed",{
+    min = 10,
+    max = 200,
+    precise = true,
+    default = 50 -- Set default to 100
+},function(value)
+    flySpeed = value
+end)
 
+exploitsFolder:Toggle("No Fog", function(state)
+    nofog_enabled = state
+    noFog(state)
+end)
+
+--###############################################
+--####### ARTIFACT DETECTION SECTION ###########
+--###############################################
+
+--███████████████████████████████████████████████--
+--           setup_artifact_detection           --
+--███████████████████████████████████████████████--
+local function setup_artifact_detection()
     local function rgbToColor3(r, g, b)
         return Color3.new(r / 255, g / 255, b / 255)
     end
@@ -309,6 +547,7 @@ exploits:Button("Arti Detector",function()
             [rgbToColor3(201, 169, 255)] = {Name = "artifactgameLannisConcoction", Message = "found Lannis Concoction"},
             [rgbToColor3(255, 89, 89)] = {Name = "artifactgamePhilo", Message = "found Philo stone"},
             [rgbToColor3(128, 187, 219)] = {Name = "artifactgameFF", Message = "found FF"},
+            [rgbToColor3(143, 219, 122)] = {Name = "artifactgameNature", Message = "found Nature"},
         },
 
         BrickColors = {
@@ -353,7 +592,6 @@ exploits:Button("Arti Detector",function()
 
     local function handleTrinket(trinket)
         local shouldRenameToOrnament = false
-        local foundSomething = false
 
         if trinket.Position == TrinketConfig.PositionToRemove then
             trinket:Destroy()
@@ -367,25 +605,20 @@ exploits:Button("Arti Detector",function()
                     if colorsAreClose(descendant.Color, targetColor, TrinketConfig.ColorTolerance) then
                         trinket.Name = config.Name
                         print(config.Message)
-                        foundSomething = true
                         matched = true
                         break
                     end
                 end
                 if not matched then
-                    print("PointLight color does not match any target color.")
                     trinket.Name = "artifactgameUnknown"
                 end
 
             elseif descendant:IsA("MeshPart") or descendant:IsA("Part") then
                 local brickColor = descendant.Parent.BrickColor
-                local brickColorName = brickColor.Name
-
-                local config = TrinketConfig.BrickColors[brickColorName]
+                local config = TrinketConfig.BrickColors[brickColor.Name]
                 if config then
                     descendant.Parent.Name = config.Name
                     print(config.Message)
-                    foundSomething = true
                 end
 
             elseif descendant:IsA("ParticleEmitter") then
@@ -396,10 +629,8 @@ exploits:Button("Arti Detector",function()
 
                     if descendant.Texture == "rbxassetid://1536547385" then
                         if descendant.LightEmission == 0.800000011920929 then
-
                             nameToUse = "artifactgameMA"
                             messageToPrint = "found MA"
-                                                        descendant.Name = "artifactgameMA"
                         else
                             nameToUse = "artifactgamePD/PF"
                             messageToPrint = "found PD/PF"
@@ -411,68 +642,49 @@ exploits:Button("Arti Detector",function()
                         descendant.Parent.Parent.Name = config.ParentName or nameToUse
                     end
                     print(messageToPrint)
-                    foundSomething = true
                 end
             end
         end
 
-        local manualWeld = trinket:FindFirstChildOfClass("ManualWeld")
-        if manualWeld then
-            shouldRenameToOrnament = true
-            foundSomething = true
-        end
-
-        if shouldRenameToOrnament then
+        if trinket:FindFirstChildOfClass("ManualWeld") then
             trinket.Name = TrinketConfig.ManualWeldName
         end
     end
 
-    for _, trinket in pairs(game.Workspace.Trinkets:GetChildren()) do
+    for _, trinket in pairs(workspace.Trinkets:GetChildren()) do
         trinket.Name = TrinketConfig.DefaultName
         handleTrinket(trinket)
     end
-
-end)
-
-exploits:Button("Tp to said artis",function()
-
-local Player = game.Players.LocalPlayer
-
-local function teleportPlayer(targetPosition)
-    Player.Character:SetPrimaryPartCFrame(CFrame.new(targetPosition))
 end
+--███████████████████████████████████████████████--
 
-local function teleportToArtifactTrinkets()
+--███████████████████████████████████████████████--
+--            teleport_to_artifacts             --
+--███████████████████████████████████████████████--
+local function teleport_to_artifacts()
+    local Player = game.Players.LocalPlayer
     while true do
-
-        local trinkets = game.Workspace.Trinkets:GetChildren()
-        local foundArtifactTrinkets = false
-
-        for _, trinket in pairs(trinkets) do
+        local found = false
+        for _, trinket in pairs(workspace.Trinkets:GetChildren()) do
             if string.find(trinket.Name, "artifactgame") then
-                foundArtifactTrinkets = true
-                local targetPosition = trinket.Position + Vector3.new(0, 5, 0) 
-                teleportPlayer(targetPosition)
-                task.wait() 
+                found = true
+                Player.Character:SetPrimaryPartCFrame(CFrame.new(trinket.Position + Vector3.new(0, 5, 0)))
+                task.wait()
                 break
             end
         end
-
-        if not foundArtifactTrinkets then
-            break
-        end
-
-        task.wait()
+        if not found then break end
     end
 end
+--███████████████████████████████████████████████--
 
-teleportToArtifactTrinkets()
+-- UI Buttons for Artifact Detection
+exploitsFolder:Button("Arti Detector", setup_artifact_detection)
+exploitsFolder:Button("Tp to said artis", teleport_to_artifacts)
 
-end)
-
-local function getRandomCoordinate(min, max)
-    return math.random(min, max)
-end
+--###############################################
+--######## TP BYPASS FUNCTION SECTION ##########
+--###############################################
 
 local mapBounds = {
     xMin = -5000,
@@ -483,24 +695,32 @@ local mapBounds = {
     zMax = 5000
 }
 
-game:GetService('RunService').Heartbeat:connect(function()
-    if enabled == true then
-        if game:GetService("Workspace").Live[game.Players.LocalPlayer.Name].CharacterHandler.Remotes:FindFirstChild("ApplyFallDamage") then
-        game.Players.LocalPlayer.Character.CharacterHandler.Remotes.ApplyFallDamage.Name = "gg bro"
-        print("done")
+game:GetService('RunService').Heartbeat:Connect(function()
+    if tp_bypass_enabled then
+        -- Bypass fall damage
+        local remotes = workspace.Live[game.Players.LocalPlayer.Name].CharacterHandler.Remotes
+        if remotes:FindFirstChild("ApplyFallDamage") then
+            remotes.ApplyFallDamage.Name = "gg bro"
         end
-        local randomX = getRandomCoordinate(mapBounds.xMin, mapBounds.xMax)
-        local randomY = getRandomCoordinate(mapBounds.yMin, mapBounds.yMax)
-        local randomZ = getRandomCoordinate(mapBounds.zMin, mapBounds.zMax)
-
-        game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(randomX, randomY, randomZ)
+        
+        -- Random teleport
+        local randomPos = Vector3.new(
+            getRandomCoordinate(mapBounds.xMin, mapBounds.xMax),
+            getRandomCoordinate(mapBounds.yMin, mapBounds.yMax),
+            getRandomCoordinate(mapBounds.zMin, mapBounds.zMax)
+        )
+        
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(randomPos)
         wait()
-game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2855, 288, -92)
-
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2855, 288, -92)
     end
 end)
 
-local yourvariable = lluX:Label("No illu", {
+--###############################################
+--######### ILLU DETECTION SECTION #############
+--###############################################
+
+local illu_label = illuFolder:Label("No illu", {
     TextSize = 25, 
     TextColor = Color3.fromRGB(255,255,255),
     BgColor = Color3.new(0.011765, 0.678431, 0.211765)
@@ -514,24 +734,23 @@ sound.Parent = game:GetService("SoundService")
 local soundPlayed = false
 local currentIllu = nil
 
+--███████████████████████████████████████████████--
+--               checkForIllu                   --
+--███████████████████████████████████████████████--
 local function checkForIllu()
     local found = false
     for _, player in pairs(game.Players:GetPlayers()) do
         local char = player.Character
         local backpack = player:FindFirstChild("Backpack")
 
-        local hasObserve = false
-        if char and char:FindFirstChild("Observe") then
-            hasObserve = true
-        elseif backpack and backpack:FindFirstChild("Observe") then
-            hasObserve = true
-        end
+        local hasObserve = (char and char:FindFirstChild("Observe")) or 
+                          (backpack and backpack:FindFirstChild("Observe"))
 
         if hasObserve then
             found = true
             if currentIllu ~= player then
                 currentIllu = player
-                yourvariable:Refresh("ILLU")
+                illu_label:Refresh("ILLU")
                 if not soundPlayed then
                     sound:Play()
                     soundPlayed = true
@@ -543,11 +762,160 @@ local function checkForIllu()
 
     if not found and currentIllu ~= nil then
         currentIllu = nil
-        yourvariable:Refresh("No illu")
+        illu_label:Refresh("No illu")
         soundPlayed = false
     end
 end
+--███████████████████████████████████████████████--
 
-game:GetService("RunService").Heartbeat:Connect(function()
-    checkForIllu()
+game:GetService("RunService").Heartbeat:Connect(checkForIllu)
+
+--###############################################
+--########### MISC FUNCTION SECTION ############
+--###############################################
+
+
+
+miscFolder:Button("Server Hop", serverhop)
+
+wait()
+
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+-- Helper function to find player by name
+local function findPlayer(playerName)
+    for _, v in next, Players:GetPlayers() do
+        if v.Name:lower():sub(1, #playerName) == playerName:lower() then
+            return v
+        end
+    end
+    return nil
+end
+
+-- Spectating state management
+local spectating = nil
+local originalColors = {}
+local currentHighlight = nil
+
+local function resetPreviousHighlight()
+    if currentHighlight and originalColors[currentHighlight] then
+        currentHighlight.TextColor3 = originalColors[currentHighlight]
+        currentHighlight = nil
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.UserInputType ~= Enum.UserInputType.MouseButton2 then return end
+    
+    local playerGui = Players.LocalPlayer:FindFirstChild("PlayerGui")
+    if not playerGui then return end
+    
+    local leaderboardGui = playerGui:FindFirstChild("LeaderboardGui")
+    if not leaderboardGui then return end
+    
+    local scrollingFrame = leaderboardGui:FindFirstChild("MainFrame"):FindFirstChild("ScrollingFrame")
+    if not scrollingFrame then return end
+
+    -- Find hovered player label
+    local hoveredLabel
+    for _, child in ipairs(scrollingFrame:GetChildren()) do
+        if child:IsA("TextLabel") and child.TextTransparency ~= 0 then
+            hoveredLabel = child
+            break
+        end
+    end
+    
+    if not hoveredLabel then return end
+    
+    -- Clean player name
+    local playerName = hoveredLabel.Text:gsub("\226\128\142", "")
+    local player = findPlayer(playerName)
+    if not player or not player.Character then return end
+
+    -- Reset previous highlight
+    resetPreviousHighlight()
+
+    -- Toggle spectating
+    if spectating ~= player then
+        -- Start spectating new player
+        spectating = player
+        Workspace.CurrentCamera.CameraSubject = player.Character:FindFirstChildOfClass("Humanoid")
+        
+        -- Store original color and apply highlight
+        originalColors[hoveredLabel] = hoveredLabel.TextColor3
+        hoveredLabel.TextColor3 = Color3.fromRGB(57, 72, 211) -- Green
+        currentHighlight = hoveredLabel
+    else
+        -- Stop spectating
+        spectating = nil
+        Workspace.CurrentCamera.CameraSubject = Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        resetPreviousHighlight()
+    end
 end)
+
+-- Updated spectatePlayer function
+local function spectatePlayer(playerName)
+    playerName = tostring(playerName)
+    local player = findPlayer(playerName)
+    if not player then return end
+    
+    local character = player.Character
+    if not character then return end
+    
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+    
+    -- Reset previous highlight
+    resetPreviousHighlight()
+    
+    -- Find the player's label in leaderboard
+    local playerGui = Players.LocalPlayer:FindFirstChild("PlayerGui")
+    if playerGui then
+        local leaderboardGui = playerGui:FindFirstChild("LeaderboardGui")
+        if leaderboardGui then
+            local scrollingFrame = leaderboardGui:FindFirstChild("MainFrame"):FindFirstChild("ScrollingFrame")
+            if scrollingFrame then
+                for _, label in ipairs(scrollingFrame:GetChildren()) do
+                    if label:IsA("TextLabel") and label.Text:gsub("\226\128\142", "") == player.Name then
+                        -- Store original color and apply highlight
+                        originalColors[label] = label.TextColor3
+                        label.TextColor3 = Color3.fromRGB(57, 72, 211)
+                        currentHighlight = label
+                        break
+                    end
+                end
+            end
+        end
+    end
+    
+    spectating = player
+    Workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+    Workspace.CurrentCamera.CameraSubject = humanoid
+end
+
+-- Updated stopSpectating function
+local function stopSpectating()
+    if not spectating then return end
+    
+    resetPreviousHighlight()
+    
+    local localPlayer = Players.LocalPlayer
+    if localPlayer.Character then
+        local humanoid = localPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            Workspace.CurrentCamera.CameraSubject = humanoid
+        end
+    end
+    
+    spectating = nil
+end
+
+return {
+    spectatePlayer = spectatePlayer,
+    stopSpectating = stopSpectating,
+    isSpectating = function() return spectating ~= nil end,
+    getSpectatingPlayer = function() return spectating end
+}
