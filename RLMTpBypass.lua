@@ -1,10 +1,3 @@
-    RypScripts - A comprehensive script for various game functionalities
-    Maintained by: YhRyptix
-    Features: Autopickup, Forge utilities, Collector detection, Exploits, and more
-
-    MODULAR DESIGN WITH CLEAR VISUAL MARKERS
-]]
-
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
