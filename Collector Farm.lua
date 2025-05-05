@@ -54,17 +54,6 @@ local function update_collector_detection()
     end
 end
 
--- Add teleport button
-collectorsFolder:Button("Teleport to Open Collector", function()
-    if current_collector_door and current_collector_door:IsDescendantOf(workspace) then
-        local root = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-        if root then
-            root.CFrame = current_collector_door.CFrame + Vector3.new(0, 5, 0)
-        end
-    else
-        collector_label:Refresh("No collector open")
-    end
-end)
 
 -- Start the collector detection loop (always on)
 task.spawn(function()
