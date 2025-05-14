@@ -23,6 +23,8 @@ local miscFolder = mainWindow:CreateFolder("Misc")
 local collector_detection_enabled = false
 local tp_bypass_enabled = false
 local serverlagger_enabled = false
+local boundbooks_enabled = false
+local purit_enabled = false
 local autopickup_enabled = false
 local fullbright_enabled = false
 local noclip_enabled = false
@@ -238,6 +240,8 @@ laggerfolder:Toggle("Toggle auto contract", function(state)
    serverlagger_enabled = state
 end)
 
+
+
 local contractlabel = laggerfolder:Label("Every time you get a Valkyrie as a contract, it auto kills it", {
     TextSize = 15,
     TextColor = Color3.fromRGB(255, 255, 255),
@@ -249,6 +253,15 @@ local contractlabeltwo = laggerfolder:Label("Basically just talk to the npc, tog
     BgColor = Color3.fromRGB(255, 85, 85) 
 })
 
+
+laggerfolder:Toggle("Auto turn in bound books", function(state)
+   boundbooks_enabled = state
+end)
+
+laggerfolder:Toggle("Auto turn in purity", function(state)
+   purit_enabled = state
+end)
+
 task.spawn(function()
     while task.wait(1.25) do
         if serverlagger_enabled then 
@@ -258,6 +271,34 @@ task.spawn(function()
 end)
 
 
+task.spawn(function()
+    while task.wait(0.1) do
+        if boundbooks_enabled then 
+            local args = {
+	{
+		choice = "Bound Books."
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Requests"):WaitForChild("Dialogue"):FireServer(unpack(args))
+
+        end
+    end
+end)
+
+
+task.spawn(function()
+    while task.wait(0.1) do
+        if purit_enabled then 
+local args = {
+	{
+		choice = "I don't need a reward."
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Requests"):WaitForChild("Dialogue"):FireServer(unpack(args))
+
+        end
+    end
+end)
 
 task.spawn(function()
     while task.wait(0.1) do
