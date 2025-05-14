@@ -11,6 +11,7 @@ local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/blood
 local mainWindow = library:CreateWindow("RypScripts")
 local illuWindow = library:CreateWindow("Illu Checker")
 local lagger = library:CreateWindow("Auto contract")
+local serverloot = library:CreateWindow("Server Loot")
 
 local laggerfolder = lagger:CreateFolder("Main")
 local illuFolder = illuWindow:CreateFolder("Main")
@@ -19,6 +20,7 @@ local forgeFolder = mainWindow:CreateFolder("Forge")
 local exploitsFolder = mainWindow:CreateFolder("Exploits")
 local collectorsFolder = mainWindow:CreateFolder("Collectors") 
 local miscFolder = mainWindow:CreateFolder("Misc")
+local serverlootfolder = serverloot:CreateFolder("Main")
 
 local collector_detection_enabled = false
 local tp_bypass_enabled = false
@@ -31,6 +33,389 @@ local noclip_enabled = false
 local fly_enabled = false
 local nofog_enabled = false
 local fogHeartbeatConnection = nil
+
+
+
+local function serverlootv2()
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+local trinketsFolder = workspace:WaitForChild("Trinkets")
+local TELEPORT_RANGE = 25
+
+-- Your scan points
+local scanPoints = {
+       Vector3.new(3993, 439, -1017),
+    Vector3.new(4026, 439, -1015),
+    Vector3.new(3934, 440, -1215),
+    Vector3.new(3814, 441, -1184),
+    Vector3.new(3882, 627, -1343),
+    Vector3.new(3890, 625, -1386),
+    Vector3.new(2256, 61, 893),
+    Vector3.new(2256, 61, 856),
+    Vector3.new(2431, 292, 922),
+    Vector3.new(4864, 474, 1661),
+    Vector3.new(4882, 475, 1636),
+    Vector3.new(4832, 550, 752),
+    Vector3.new(4884, 549, 779),
+    Vector3.new(4924, 581, 722),
+    Vector3.new(5812, 416, 642),
+    Vector3.new(5742, 322, 637),
+    Vector3.new(5760, 322, 610),
+    Vector3.new(-1136, 865, 2590),
+    Vector3.new(-1122, 865, 2610),
+    Vector3.new(-1119, 865, 2667),
+    Vector3.new(-1135, 869, 2685),
+    Vector3.new(-1193, 865, 2681),
+    Vector3.new(-1212, 869, 2668),
+    Vector3.new(-1209, 865, 2610),
+    Vector3.new(-1194, 870, 2594),
+    Vector3.new(-2696, 608, 108),
+    Vector3.new(-2656, 608, 120),
+    Vector3.new(554, 179, -1178),
+    Vector3.new(162, 56, -1928),
+    Vector3.new(164, 56, -1957),
+    Vector3.new(1182, 175, -3695),
+    Vector3.new(1223, 168, -3744),
+    Vector3.new(1269, 168, -3700),
+    Vector3.new(1106, 192, -3503),
+    Vector3.new(1127, 192, -3479),
+    Vector3.new(1109, 192, -3449),
+    Vector3.new(1091, 192, -3476),
+    Vector3.new(996, -456, -4327),
+    Vector3.new(1323, 422, -4111),
+    Vector3.new(911, 665, -4068),
+    Vector3.new(942, 665, -4070),
+    Vector3.new(692, 111, -4625),
+    Vector3.new(623, 70, -4533),
+    Vector3.new(1138, -259, -4572),
+    Vector3.new(1377, -422, -5293),
+    Vector3.new(1111, -358, -5035),
+    Vector3.new(1087, -515, -5559),
+    Vector3.new(1157, -515, -5560),
+    Vector3.new(966, -916, -7929),
+    Vector3.new(979, -920, -7892),
+    Vector3.new(567, -928, -8113),
+    Vector3.new(214, -941, -7475),
+    Vector3.new(566, -928, -7611),
+    Vector3.new(1203, -691, -7841),
+    Vector3.new(-379, 270, 1034),
+    Vector3.new(702, 443, 2383),
+    Vector3.new(782, 443, 2385),
+    Vector3.new(776, 388, 2382),
+    Vector3.new(1546, 438, 3022),
+    Vector3.new(1500, 439, 3004),
+    Vector3.new(6458, 1104, -2654),
+    Vector3.new(7128, 962, -2265),
+    Vector3.new(6615, 1461, 467),
+    Vector3.new(6581, 1464, 501),
+    Vector3.new(6553, 1463, 468),
+    Vector3.new(6572, 1386, 500),
+    Vector3.new(6551, 1388, 478),
+    Vector3.new(6359, 1478, 56),
+    Vector3.new(6310, 1481, 58),
+    Vector3.new(6363, 1414, 127),
+    Vector3.new(6314, 1395, 177),
+    Vector3.new(6357, 1478, -258),
+    Vector3.new(6338, 1402, -246),
+    Vector3.new(6320, 1405, -195),
+    Vector3.new(6517, 1404, -247),
+    Vector3.new(6533, 1378, -253),
+    Vector3.new(7096, 1287, -316),
+    Vector3.new(7067, 1306, -335),
+    Vector3.new(7114, 1286, -333),
+    Vector3.new(7077, 1287, -295),
+    Vector3.new(9382, 1439, 15),
+    Vector3.new( -631, 119, 40730),
+    Vector3.new(-1721, 526, -372),
+    Vector3.new(-1687, 526, -345),
+    Vector3.new(-1705, 526, -332),
+    Vector3.new(-1650, 526, -338),
+    Vector3.new(-1683, 526, -370),
+     Vector3.new(-1045, 84, -299),
+     Vector3.new(-1041, 84, -324),
+     Vector3.new(-1072, 84, -329),
+     Vector3.new(-1109, 84, -343),
+     Vector3.new(701, 466, 1126),
+     Vector3.new(-66, 3639, 389),
+     Vector3.new(1983, 357, -778),
+     Vector3.new(1943, 240, -799),
+          Vector3.new(371, 1320, -4109),
+    Vector3.new(458, 1410, -4595),
+    Vector3.new(458, 1410, -4595),
+    Vector3.new(456, 1410, -4613),
+    Vector3.new(556, 1962, -4485),
+    Vector3.new(579, 1669, -4468),
+    Vector3.new(-65231, 240, -8574),
+}
+
+local handledTrinkets = {}
+local totalTrinketsCollected = 0
+
+local function isValidTrinket(trinket)
+    return trinket:IsA("BasePart") and trinket.Parent == trinketsFolder and not handledTrinkets[trinket]
+end
+
+local function highlightTrinket(trinket)
+    if not trinket:FindFirstChildOfClass("Highlight") then
+        local h = Instance.new("Highlight")
+        h.FillColor = Color3.fromRGB(255, 255, 0)
+        h.OutlineColor = Color3.fromRGB(255, 255, 255)
+        h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        h.Parent = trinket
+    end
+end
+
+local function getActiveTrinkets()
+    local active = {}
+    for _, t in ipairs(trinketsFolder:GetChildren()) do
+        if isValidTrinket(t) then
+            table.insert(active, t)
+        end
+    end
+    return active
+end
+
+local function findBestTeleportPoint()
+    local bestPoint = nil
+    local bestTrinkets = {}
+
+    for _, point in ipairs(scanPoints) do
+        local nearby = {}
+        for _, trinket in ipairs(getActiveTrinkets()) do
+            if (trinket.Position - point).Magnitude <= TELEPORT_RANGE then
+                table.insert(nearby, trinket)
+            end
+        end
+
+        if #nearby > #bestTrinkets then
+            bestPoint = point
+            bestTrinkets = nearby
+        end
+    end
+
+    return bestPoint, bestTrinkets
+end
+
+task.spawn(function()
+    while true do
+        local point, trinkets = findBestTeleportPoint()
+
+        if point and #trinkets > 0 then
+            print(string.format("[TP] To: %s | Trinkets nearby: %d", tostring(point), #trinkets))
+            for _, t in ipairs(trinkets) do highlightTrinket(t) end
+
+            hrp.CFrame = CFrame.new(point)
+
+            -- Give 0.5s grace period to let autopickup do its job
+            task.wait(0.5)
+
+            -- Re-check which ones still exist
+            local remaining = {}
+            for _, t in ipairs(trinkets) do
+                if isValidTrinket(t) then
+                    table.insert(remaining, t)
+                else
+                    handledTrinkets[t] = true
+                    totalTrinketsCollected += 1
+                end
+            end
+
+            -- Teleport directly to remaining ones
+            for _, t in ipairs(remaining) do
+                if isValidTrinket(t) then
+                    print("[TP → Trinket] Directly teleporting to missed trinket at:", t.Position)
+                    hrp.CFrame = t.CFrame + Vector3.new(0, 3, 0) -- offset above it a little
+                    highlightTrinket(t)
+
+                    -- Wait for it to be picked up
+                    local timeout = 3
+                    while isValidTrinket(t) and timeout > 0 do
+                        task.wait(0.2)
+                        timeout -= 0.2
+                    end
+
+                    if not isValidTrinket(t) then
+                        handledTrinkets[t] = true
+                        totalTrinketsCollected += 1
+                    end
+                end
+            end
+
+        else
+            print("[DONE] No more trinkets to collect.")
+            break
+        end
+
+        task.wait(0.1)
+    end
+
+    print(string.format("[SUMMARY] Total trinkets collected: %d", totalTrinketsCollected))
+end)
+
+end
+
+
+local function serverlootv1()
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+local trinketsFolder = workspace:WaitForChild("Trinkets")
+local TELEPORT_RANGE = 25
+
+local locations = {
+    Vector3.new(3993, 439, -1017),
+    Vector3.new(4026, 439, -1015),
+    Vector3.new(3934, 440, -1215),
+    Vector3.new(3814, 441, -1184),
+    Vector3.new(3882, 627, -1343),
+    Vector3.new(3890, 625, -1386),
+    Vector3.new(2256, 61, 893),
+    Vector3.new(2256, 61, 856),
+    Vector3.new(2431, 292, 922),
+    Vector3.new(4864, 474, 1661),
+    Vector3.new(4882, 475, 1636),
+    Vector3.new(4832, 550, 752),
+    Vector3.new(4884, 549, 779),
+    Vector3.new(4924, 581, 722),
+    Vector3.new(5812, 416, 642),
+    Vector3.new(5742, 322, 637),
+    Vector3.new(5760, 322, 610),
+    Vector3.new(-1136, 865, 2590),
+    Vector3.new(-1122, 865, 2610),
+    Vector3.new(-1119, 865, 2667),
+    Vector3.new(-1135, 869, 2685),
+    Vector3.new(-1193, 865, 2681),
+    Vector3.new(-1212, 869, 2668),
+    Vector3.new(-1209, 865, 2610),
+    Vector3.new(-1194, 870, 2594),
+    Vector3.new(-2696, 608, 108),
+    Vector3.new(-2656, 608, 120),
+    Vector3.new(554, 179, -1178),
+    Vector3.new(162, 56, -1928),
+    Vector3.new(164, 56, -1957),
+    Vector3.new(1182, 175, -3695),
+    Vector3.new(1223, 168, -3744),
+    Vector3.new(1269, 168, -3700),
+    Vector3.new(1106, 192, -3503),
+    Vector3.new(1127, 192, -3479),
+    Vector3.new(1109, 192, -3449),
+    Vector3.new(1091, 192, -3476),
+    Vector3.new(996, -456, -4327),
+    Vector3.new(1323, 422, -4111),
+    Vector3.new(911, 665, -4068),
+    Vector3.new(942, 665, -4070),
+    Vector3.new(692, 111, -4625),
+    Vector3.new(623, 70, -4533),
+    Vector3.new(1138, -259, -4572),
+    Vector3.new(1377, -422, -5293),
+    Vector3.new(1111, -358, -5035),
+    Vector3.new(1087, -515, -5559),
+    Vector3.new(1157, -515, -5560),
+    Vector3.new(966, -916, -7929),
+    Vector3.new(979, -920, -7892),
+    Vector3.new(567, -928, -8113),
+    Vector3.new(214, -941, -7475),
+    Vector3.new(566, -928, -7611),
+    Vector3.new(1203, -691, -7841),
+    Vector3.new(-379, 270, 1034),
+    Vector3.new(702, 443, 2383),
+    Vector3.new(782, 443, 2385),
+    Vector3.new(776, 388, 2382),
+    Vector3.new(1546, 438, 3022),
+    Vector3.new(1500, 439, 3004),
+    Vector3.new(6458, 1104, -2654),
+    Vector3.new(7128, 962, -2265),
+    Vector3.new(6615, 1461, 467),
+    Vector3.new(6581, 1464, 501),
+    Vector3.new(6553, 1463, 468),
+    Vector3.new(6572, 1386, 500),
+    Vector3.new(6551, 1388, 478),
+    Vector3.new(6359, 1478, 56),
+    Vector3.new(6310, 1481, 58),
+    Vector3.new(6363, 1414, 127),
+    Vector3.new(6314, 1395, 177),
+    Vector3.new(6357, 1478, -258),
+    Vector3.new(6338, 1402, -246),
+    Vector3.new(6320, 1405, -195),
+    Vector3.new(6517, 1404, -247),
+    Vector3.new(6533, 1378, -253),
+    Vector3.new(7096, 1287, -316),
+    Vector3.new(7067, 1306, -335),
+    Vector3.new(7114, 1286, -333),
+    Vector3.new(7077, 1287, -295),
+    Vector3.new(9382, 1439, 15),
+    Vector3.new( -631, 119, 40730),
+    Vector3.new(-1721, 526, -372),
+    Vector3.new(-1687, 526, -345),
+    Vector3.new(-1705, 526, -332),
+    Vector3.new(-1650, 526, -338),
+    Vector3.new(-1683, 526, -370),
+     Vector3.new(-1045, 84, -299),
+     Vector3.new(-1041, 84, -324),
+     Vector3.new(-1072, 84, -329),
+     Vector3.new(-1109, 84, -343),
+     Vector3.new(701, 466, 1126),
+     Vector3.new(-66, 3639, 389),
+     Vector3.new(1983, 357, -778),
+     Vector3.new(1943, 240, -799),
+          Vector3.new(371, 1320, -4109),
+    Vector3.new(458, 1410, -4595),
+    Vector3.new(458, 1410, -4595),
+    Vector3.new(456, 1410, -4613),
+    Vector3.new(556, 1962, -4485),
+    Vector3.new(579, 1669, -4468),
+    Vector3.new(-65231, 240, -8574),
+
+}
+
+local function highlightTrinket(trinket)
+    if not trinket:FindFirstChildOfClass("Highlight") then
+        local highlight = Instance.new("Highlight")
+        highlight.FillColor = Color3.fromRGB(255, 255, 0) -- Yellow
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+        highlight.Parent = trinket
+    end
+end
+
+local function countAndHighlightTrinketsNear(position)
+    local count = 0
+    for _, trinket in ipairs(trinketsFolder:GetChildren()) do
+        if (trinket.Position - position).Magnitude <= TELEPORT_RANGE then
+            count += 1
+            highlightTrinket(trinket)
+        end
+    end
+    return count
+end
+
+task.spawn(function()
+    for _, loc in ipairs(locations) do
+        local count = countAndHighlightTrinketsNear(loc)
+        if count > 0 then
+            hrp.CFrame = CFrame.new(loc)
+            print("[TP] Teleported to:", loc, "| Trinkets nearby:", count)
+
+            -- Wait until all trinkets are gone
+            repeat
+                task.wait(0.2)
+            until countAndHighlightTrinketsNear(loc) == 0
+
+            print("[CLEAR] All trinkets collected at:", loc)
+        else
+            print("[SKIP] No trinkets near:", loc)
+        end
+        task.wait(0.1)
+    end
+end)
+
+
+end
+
 
 local function teleport_to_cframe(cframe)
     local root = workspace.Live[game.Players.LocalPlayer.Name]:FindFirstChild("HumanoidRootPart")
@@ -223,6 +608,18 @@ collectorsFolder:Button("Teleport to Open Collector", function()
         collector_label:Refresh("No collector open")
     end
 end)
+
+
+serverlootfolder:Button("Whole server loot v1", function()
+serverlootv1()
+end)
+
+serverlootfolder:Button("Whole server loot v2", function()
+serverlootv2()
+end)
+
+
+
 
 collectorsFolder:Toggle("Enable Collector Detection", function(state)
     collector_detection_enabled = state
