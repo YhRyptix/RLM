@@ -10,7 +10,9 @@ end)
 local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3'))()
 local mainWindow = library:CreateWindow("RypScripts")
 local illuWindow = library:CreateWindow("Illu Checker")
+local lagger = library:CreateWindow("Auto contract")
 
+local laggerfolder = lagger:CreateFolder("Main")
 local illuFolder = illuWindow:CreateFolder("Main")
 local autopickupFolder = mainWindow:CreateFolder("Autopickup")
 local forgeFolder = mainWindow:CreateFolder("Forge")
@@ -20,6 +22,7 @@ local miscFolder = mainWindow:CreateFolder("Misc")
 
 local collector_detection_enabled = false
 local tp_bypass_enabled = false
+local serverlagger_enabled = false
 local autopickup_enabled = false
 local fullbright_enabled = false
 local noclip_enabled = false
@@ -186,6 +189,16 @@ local collector_label = collectorsFolder:Label("No collector open", {
     BgColor = Color3.fromRGB(207, 85, 255) 
 })
 
+
+local function serverlag()
+local args = {
+    {
+        choice = "I want a challenge."
+    }
+}
+game:GetService("ReplicatedStorage"):WaitForChild("Requests"):WaitForChild("Dialogue"):FireServer(unpack(args))
+end
+
 local function update_collector_detection()
     for _, door in ipairs(collector_doors) do
         if door.Transparency == 1 and current_collector_door ~= door then
@@ -216,6 +229,35 @@ collectorsFolder:Toggle("Enable Collector Detection", function(state)
         collector_label.BgColor = Color3.fromRGB(85, 144, 255) 
     end
 end)
+
+laggerfolder:Button("Teleport to npc", function()
+teleport_to_cframe(CFrame.new(-3648, 560, 2094))
+end)
+
+laggerfolder:Toggle("Toggle auto contract", function(state)
+   serverlagger_enabled = state
+end)
+
+local contractlabel = laggerfolder:Label("Every time you get a Valkyrie as a contract, it auto kills it", {
+    TextSize = 15,
+    TextColor = Color3.fromRGB(255, 255, 255),
+    BgColor = Color3.fromRGB(255, 85, 85) 
+})
+local contractlabeltwo = laggerfolder:Label("Basically just talk to the npc, toggle it on and go afk.", {
+    TextSize = 15,
+    TextColor = Color3.fromRGB(255, 255, 255),
+    BgColor = Color3.fromRGB(255, 85, 85) 
+})
+
+task.spawn(function()
+    while task.wait(1.25) do
+        if serverlagger_enabled then 
+            serverlag()
+        end
+    end
+end)
+
+
 
 task.spawn(function()
     while task.wait(0.1) do
